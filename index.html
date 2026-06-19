@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hay Day - Farm Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .farm-area {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .farm-plot {
+            aspect-ratio: 1;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 3em;
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .farm-plot:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .farm-plot.empty {
+            background: #e8e8e8;
+        }
+
+        .farm-plot.growing {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-color: #96e6a1;
+        }
+
+        .farm-plot .ready {
+            animation: bounce 0.5s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .crop-emoji {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .timer {
+            font-size: 0.7em;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 2px 6px;
+            border-radius: 5px;
+            color: #333;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #buyWheat {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        #buyWheat:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.3);
+        }
+
+        #buyCorn {
+            background: linear-gradient(135deg, #ffa751 0%, #ffe259 100%);
+        }
+
+        #buyCorn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 167, 81, 0.3);
+        }
+
+        #buyCarrot {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        #buyCarrot:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        #upgradeFarm {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        #upgradeFarm:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(17, 153, 142, 0.3);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .farm-area {
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .farm-plot {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌾 Hay Day</h1>
+        <p class="subtitle">Farm Tycoon Game</p>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-label">💰 Coins</div>
+                <div class="stat-value" id="coins">500</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">⭐ Level</div>
+                <div class="stat-value" id="level">1</div>
+            </div>
+        </div>
+
+        <div class="farm-area" id="farmArea">
+            <!-- Farm plots will be created here -->
+        </div>
+
+        <div class="buttons">
+            <button id="buyWheat">🌾 Wheat<br>50 coins</button>
+            <button id="buyCorn">🌽 Corn<br>75 coins</button>
+            <button id="buyCarrot">🥕 Carrot<br>100 coins</button>
+            <button id="upgradeFarm">📈 Upgrade Farm<br>200 coins</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
